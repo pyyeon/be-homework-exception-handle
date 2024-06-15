@@ -3,7 +3,7 @@ package com.springboot.advice;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,16 +32,29 @@ public class GlobalExceptionAdvice {
     }
 
     @ExceptionHandler
-    public ResponseEntity handleBusinessLogicException(BusinessLogicException e) {
-        System.out.println(e.getExceptionCode().getStatus());
-        System.out.println(e.getMessage());
-
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleBusinessLogicException(BusinessLogicException e) {
         // TODO GlobalExceptionAdvice 기능 추가 1
-        return new ResponseEntity<>(HttpStatus.valueOf(e.getExceptionCode()
-                .getStatus()));
+        //MemberController의 getMember() 핸들러 메서드에 요청 전송 시, 아래와 같은 에러 응답 및 HttpStatus를 볼 수 있어야 합니다.
+        // 현재는 요청을 전송해도 콘솔에서 로그만 출력
+        return ErrorResponse.of(e);
+//        return new ResponseEntity<>(HttpStatus.valueOf(e.getExceptionCode()
+//                .getStatus()
+//                ));
+    }
+    // TODO GlobalExceptionAdvice 기능 추가 2
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ErrorResponse handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        // TODO GlobalExceptionAdvice 기능 추가 1
+        //MemberController의 getMember() 핸들러 메서드에 요청 전송 시, 아래와 같은 에러 응답 및 HttpStatus를 볼 수 있어야 합니다.
+        // 현재는 요청을 전송해도 콘솔에서 로그만 출력
+        return ErrorResponse.of(e);
+//        return new ResponseEntity<>(HttpStatus.valueOf(e.getExceptionCode()
+//                .getStatus()
+//                ));
     }
 
-    // TODO GlobalExceptionAdvice 기능 추가 2
 
     // TODO GlobalExceptionAdvice 기능 추가 3
 }
